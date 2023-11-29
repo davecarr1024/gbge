@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from dataclasses import dataclass, field
 from typing import Generic, Iterator, Mapping, MutableMapping, Self, TypeVar
 from gbge.board import board
@@ -13,28 +14,36 @@ class Grid(
     board.Board[_Player],
     Mapping[pos.Pos, _Piece],
 ):
-    rows: int
-    cols: int
     _pieces: Mapping[pos.Pos, _Piece] = field(default_factory=dict)
+
+    @dataclass(frozen=True)
+    class Dim:
+        rows: int
+        cols: int
+
+    @classmethod
+    @abstractmethod
+    def dim(self) -> Dim:
+        ...
 
     def __post_init__(self) -> None:
         for pos_, piece in self._pieces.items():
             if (
                 pos_ != piece.pos
                 or pos_.row < 0
-                or pos_.row >= self.rows
+                or pos_.row >= self.dim().rows
                 or pos_.col < 0
-                or pos_.col >= self.cols
+                or pos_.col >= self.dim().cols
             ):
                 raise ValueError(pos_, piece)
 
     def __str__(self) -> str:
         s = ""
-        for col in range(self.cols):
+        for col in range(self.dim().cols):
             s += "+-"
         s += "+\n"
-        for row in range(self.rows):
-            for col in range(self.cols):
+        for row in range(self.dim().rows):
+            for col in range(self.dim().cols):
                 s += "|"
                 pos_ = pos.Pos(row, col)
                 if pos_ in self._pieces:
@@ -42,7 +51,7 @@ class Grid(
                 else:
                     s += " "
             s += "|\n"
-            for col in range(self.cols):
+            for col in range(self.dim().cols):
                 s += "+-"
             s += "+\n"
         return s
@@ -62,17 +71,18 @@ class Grid(
             case _:
                 raise TypeError(key)
 
-    def _with_pieces(self, pieces: Mapping[pos.Pos, _Piece]) -> Self:
-        return self.__class__(self.rows, self.cols, pieces)
+    @classmethod
+    def with_pieces(cls, *pieces: _Piece) -> Self:
+        pieces_ = {piece.pos: piece for piece in pieces}
+        assert len(pieces) == len(pieces_), "duplicate piece positions"
+        return cls._with_pieces(pieces_)
+
+    @classmethod
+    def _with_pieces(cls, pieces: Mapping[pos.Pos, _Piece]) -> Self:
+        return cls(pieces)
 
     def with_piece(self, piece: _Piece) -> Self:
         return self._with_pieces(dict(self._pieces) | {piece.pos: piece})
-
-    def without_piece(self, piece: _Piece) -> Self:
-        pieces: MutableMapping[pos.Pos, _Piece] = dict(self._pieces)
-        if piece.pos in pieces:
-            pieces.pop(piece.pos)
-        return self._with_pieces(pieces)
 
 
 from gbge.player import player

@@ -16,5 +16,13 @@ class Game(
         default=side.Side,
     )
 
+    @property
+    def x(self) -> "player.Player":
+        return self._players[side.Side.x]
+
+    @property
+    def o(self) -> "player.Player":
+        return self._players[side.Side.o]
+
 
 from toe import player
