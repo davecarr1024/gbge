@@ -36,24 +36,32 @@ class BoardTest(TestCase):
                 ),
                 (
                     "   \n   \n x ",
-                    toe.Board.with_pieces(
-                        toe.Piece(
-                            _game.x,
-                            grid.Pos(2, 1),
-                        ),
+                    toe.Board(
+                        frozenset(
+                            [
+                                toe.Piece(
+                                    _game.x,
+                                    grid.Pos(2, 1),
+                                ),
+                            ]
+                        )
                     ),
                 ),
                 (
                     "  o\n   \n x ",
-                    toe.Board.with_pieces(
-                        toe.Piece(
-                            _game.x,
-                            grid.Pos(2, 1),
-                        ),
-                        toe.Piece(
-                            _game.o,
-                            grid.Pos(0, 2),
-                        ),
+                    toe.Board(
+                        frozenset(
+                            [
+                                toe.Piece(
+                                    _game.x,
+                                    grid.Pos(2, 1),
+                                ),
+                                toe.Piece(
+                                    _game.o,
+                                    grid.Pos(0, 2),
+                                ),
+                            ]
+                        )
                     ),
                 ),
                 (
@@ -89,6 +97,17 @@ class BoardTest(TestCase):
                     frozenset(
                         [
                             toe.Board.load(_game, "xxx\nxxx\nxxo"),
+                        ]
+                    ),
+                ),
+                (
+                    toe.Board.load(_game, "xxx\nxxx\n   "),
+                    _game.o,
+                    frozenset(
+                        [
+                            toe.Board.load(_game, "xxx\nxxx\no  "),
+                            toe.Board.load(_game, "xxx\nxxx\n o "),
+                            toe.Board.load(_game, "xxx\nxxx\n  o"),
                         ]
                     ),
                 ),

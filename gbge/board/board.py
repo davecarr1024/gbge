@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, Iterable, Self, TypeVar
+from typing import FrozenSet, Generic, Self, TypeVar
 
 
 _Player = TypeVar("_Player", bound="player.Player")
@@ -12,7 +12,7 @@ class Board(
     Generic[_Player],
 ):
     @abstractmethod
-    def moves(self, player: _Player) -> Iterable[Self]:
+    def moves(self, player: _Player) -> FrozenSet[Self]:
         ...
 
 

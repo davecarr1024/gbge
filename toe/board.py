@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Iterable, MutableMapping
+from typing import FrozenSet, MutableMapping, MutableSet
 from gbge.board import grid
 
 
@@ -9,9 +9,10 @@ class Board(grid.Grid["player.Player", "piece.Piece"]):
     def dim(cls) -> "Board.Dim":
         return Board.Dim(3, 3)
 
-    def moves(self, player: "player.Player") -> Iterable["Board"]:
-        for row in range(self.dim().rows):
-            for col in range(self.dim().cols):
+    def moves(self, player: "player.Player") -> FrozenSet["Board"]:
+        dim = self.dim()
+        for row in range(dim.rows):
+            for col in range(dim.cols):
                 pos = grid.Pos(row, col)
                 if pos not in self:
                     yield self.with_piece(piece.Piece(player, pos))
@@ -22,13 +23,12 @@ class Board(grid.Grid["player.Player", "piece.Piece"]):
         lines = input.split("\n")
         assert len(lines) == dim.rows
         assert all(len(line) == dim.cols for line in lines)
-        pieces: MutableMapping[grid.Pos, piece.Piece] = {}
+        pieces: MutableSet[piece.Piece] = set()
         for row, line in enumerate(lines):
             for col, val in enumerate(line):
                 if val != " ":
-                    pos = grid.Pos(row, col)
-                    pieces[pos] = piece.Piece(game[side.Side(val)], pos)
-        return Board(pieces)
+                    pieces.add(piece.Piece(game[side.Side(val)], grid.Pos(row, col)))
+        return Board(frozenset(pieces))
 
 
 from toe import game, player, piece, side

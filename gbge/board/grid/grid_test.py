@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterable, Optional, Sequence
+from typing import FrozenSet, Optional, Sequence
 from unittest import TestCase
 from gbge.board import grid
 from gbge.board.grid import pos
@@ -38,7 +38,7 @@ class _Board(grid.Grid["_Player", "_Piece"]):
     def dim(cls) -> "_Board.Dim":
         return _Board.Dim(3, 3)
 
-    def moves(self, player: "_Player") -> Iterable["_Board"]:
+    def moves(self, player: "_Player") -> FrozenSet["_Board"]:
         raise NotImplementedError()
 
 
@@ -54,30 +54,36 @@ class GridTest(TestCase):
     def test_new(self) -> None:
         for pieces, expected in list[
             tuple[
-                Sequence[_Piece],
+                FrozenSet[_Piece],
                 Optional[_Board],
             ]
         ](
             [
                 (
-                    [],
+                    frozenset([]),
                     _Board(),
                 ),
                 (
-                    [
-                        _Piece(_Player("a"), pos.Pos(0, 0)),
-                    ],
+                    frozenset(
+                        [
+                            _Piece(_Player("a"), pos.Pos(0, 0)),
+                        ]
+                    ),
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        ),
                     ),
                 ),
                 (
-                    [
-                        _Piece(_Player("a"), pos.Pos(0, 0)),
-                        _Piece(_Player("b"), pos.Pos(0, 0)),
-                    ],
+                    frozenset(
+                        [
+                            _Piece(_Player("a"), pos.Pos(0, 0)),
+                            _Piece(_Player("b"), pos.Pos(0, 0)),
+                        ]
+                    ),
                     None,
                 ),
             ]
@@ -85,9 +91,9 @@ class GridTest(TestCase):
             with self.subTest(pieces=pieces, expected=expected):
                 if expected is None:
                     with self.assertRaises(Exception):
-                        _Board.with_pieces(*pieces)
+                        _Board(pieces)
                 else:
-                    self.assertEqual(_Board.with_pieces(*pieces), expected)
+                    self.assertEqual(_Board(pieces), expected)
 
     def test_invalid_piece(self) -> None:
         player = _Player("a")
@@ -113,7 +119,7 @@ class GridTest(TestCase):
         ):
             with self.subTest(piece=piece):
                 with self.assertRaises(Exception):
-                    _Board({piece.pos: piece})
+                    _Board(frozenset([piece]))
 
     def test_with_piece(self) -> None:
         a = _Player("a")
@@ -122,7 +128,7 @@ class GridTest(TestCase):
             tuple[
                 _Board,
                 _Piece,
-                _Board,
+                Optional[_Board],
             ]
         ](
             [
@@ -130,28 +136,50 @@ class GridTest(TestCase):
                     _Board(),
                     _Piece(a, pos.Pos(0, 0)),
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(a, pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(a, pos.Pos(0, 0)),
+                            ]
+                        ),
                     ),
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(b, pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(b, pos.Pos(0, 0)),
+                            ]
+                        ),
                     ),
                     _Piece(a, pos.Pos(0, 0)),
+                    None,
+                ),
+                (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(a, pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(a, pos.Pos(0, 0)),
+                            ]
+                        ),
+                    ),
+                    _Piece(b, pos.Pos(1, 0)),
+                    _Board(
+                        frozenset(
+                            [
+                                _Piece(a, pos.Pos(0, 0)),
+                                _Piece(b, pos.Pos(1, 0)),
+                            ]
+                        ),
                     ),
                 ),
             ]
         ):
             with self.subTest(board=board, piece=piece, expected=expected):
-                self.assertEqual(board.with_piece(piece), expected)
+                if expected is None:
+                    with self.assertRaises(Exception):
+                        board.with_piece(piece)
+                else:
+                    self.assertEqual(board.with_piece(piece), expected)
 
     def test_getitem(self) -> None:
         for board, key, expected in list[
@@ -174,36 +202,44 @@ class GridTest(TestCase):
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     pos.Pos(0, 0),
                     _Piece(_Player("a"), pos.Pos(0, 0)),
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     (0, 0),
                     _Piece(_Player("a"), pos.Pos(0, 0)),
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     pos.Pos(1, 0),
                     None,
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     (1, 0),
                     None,
@@ -234,36 +270,44 @@ class GridTest(TestCase):
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     pos.Pos(0, 0),
                     True,
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     (0, 0),
                     True,
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     pos.Pos(1, 0),
                     False,
                 ),
                 (
                     _Board(
-                        {
-                            pos.Pos(0, 0): _Piece(_Player("a"), pos.Pos(0, 0)),
-                        }
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), pos.Pos(0, 0)),
+                            ]
+                        )
                     ),
                     (1, 0),
                     False,
