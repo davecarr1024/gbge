@@ -9,9 +9,10 @@ class State(
         "game.Game",
         "board.Board",
         "player.Player",
+        "result.Result",
     ],
 ):
     ...
 
 
-from toe import game, board, player
+from toe import game, board, player, result

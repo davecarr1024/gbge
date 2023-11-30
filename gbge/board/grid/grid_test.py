@@ -9,12 +9,25 @@ from gbge.state import state
 
 
 @dataclass(frozen=True)
-class _Game(game.Game["_Player"]):
+class _Game(
+    game.Game[
+        "_State",
+        "_Player",
+        "_Result",
+    ]
+):
     ...
 
 
 @dataclass(frozen=True)
-class _State(state.State["_Game", "_Board", "_Player"]):
+class _State(
+    state.State[
+        "_Game",
+        "_Board",
+        "_Player",
+        "_Result",
+    ]
+):
     ...
 
 
@@ -33,7 +46,13 @@ class _Player(player.Player["_State", "_Board"]):
 
 
 @dataclass(frozen=True)
-class _Board(grid.Grid["_Player", "_Piece"]):
+class _Board(
+    grid.Grid[
+        "_Player",
+        "_Piece",
+        "_Result",
+    ]
+):
     @classmethod
     def dim(cls) -> "_Board.Dim":
         return _Board.Dim(3, 3)
@@ -41,9 +60,18 @@ class _Board(grid.Grid["_Player", "_Piece"]):
     def moves(self, player: "_Player") -> FrozenSet["_Board"]:
         raise NotImplementedError()
 
+    @property
+    def result(self) -> Optional["_Result"]:
+        return None
+
 
 @dataclass(frozen=True)
 class _Piece(grid.Piece["_Player"]):
+    ...
+
+
+@dataclass(frozen=True)
+class _Result:
     ...
 
 

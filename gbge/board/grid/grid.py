@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from dataclasses import dataclass, field
-from functools import cache, cached_property
+from functools import cached_property
 from typing import (
     FrozenSet,
     Generic,
@@ -16,12 +16,13 @@ from gbge.board.grid import pos
 
 _Player = TypeVar("_Player", bound="player.Player")
 _Piece = TypeVar("_Piece", bound="piece.Piece")
+_Result = TypeVar("_Result")
 
 
 @dataclass(frozen=True)
 class Grid(
-    Generic[_Player, _Piece],
-    board.Board[_Player],
+    Generic[_Player, _Piece, _Result],
+    board.Board[_Player, _Result],
     Sized,
     Iterable[_Piece],
 ):

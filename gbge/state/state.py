@@ -1,16 +1,17 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, Self, TypeVar
+from typing import Generic, Optional, Self, TypeVar
 
 _Game = TypeVar("_Game", bound="game.Game")
 _Board = TypeVar("_Board", bound="board.Board")
 _Player = TypeVar("_Player", bound="player.Player")
+_Result = TypeVar("_Result")
 
 
 @dataclass(frozen=True)
 class State(
     ABC,
-    Generic[_Game, _Board, _Player],
+    Generic[_Game, _Board, _Player, _Result],
 ):
     game: _Game
     board: _Board
@@ -22,6 +23,10 @@ class State(
             self.player.move(self),
             self.game.next_player(self.player),
         )
+
+    @property
+    def result(self) -> Optional[_Result]:
+        return self.board.result
 
 
 from gbge.game import game

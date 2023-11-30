@@ -10,10 +10,10 @@ class _Player(toe.Player):
 
 
 _game = toe.Game(
-    {
-        toe.Side.x: _Player(toe.Side.x),
-        toe.Side.o: _Player(toe.Side.o),
-    }
+    [
+        _Player(toe.Side.x),
+        _Player(toe.Side.o),
+    ]
 )
 
 

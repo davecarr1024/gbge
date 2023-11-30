@@ -1,10 +1,16 @@
-from dataclasses import dataclass, field
-from typing import FrozenSet, MutableMapping, MutableSet
+from dataclasses import dataclass
+from typing import FrozenSet, MutableSet
 from gbge.board import grid
 
 
 @dataclass(frozen=True)
-class Board(grid.Grid["player.Player", "piece.Piece"]):
+class Board(
+    grid.Grid[
+        "player.Player",
+        "piece.Piece",
+        "result.Result",
+    ]
+):
     @classmethod
     def dim(cls) -> "Board.Dim":
         return Board.Dim(3, 3)
@@ -30,5 +36,9 @@ class Board(grid.Grid["player.Player", "piece.Piece"]):
                     pieces.add(piece.Piece(game[side.Side(val)], grid.Pos(row, col)))
         return Board(frozenset(pieces))
 
+    @property
+    def result(self) -> "result.Result":
+        raise NotImplementedError()
 
-from toe import game, player, piece, side
+
+from toe import game, player, piece, side, result
