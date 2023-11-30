@@ -1,1 +1,4 @@
-from . import game, state, board, player, sides
+from .board import Board
+from .game import Game
+from .player import Player
+from . import grid
