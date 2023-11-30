@@ -13,6 +13,7 @@ class Board(
     Generic[
         _Game,
         _Player,
+        _Result,
     ],
 ):
     @abstractmethod

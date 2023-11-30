@@ -1,18 +1,18 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from enum import Enum
 from typing import Generic, TypeVar
+from gbge import player
 
 _Board = TypeVar("_Board", bound="board.Board")
+_Side = TypeVar("_Side", bound=Enum)
 
 
 @dataclass(frozen=True)
 class Player(
-    ABC,
-    Generic[_Board,],
+    Generic[_Board, _Side],
+    player.Player[_Board],
 ):
-    @abstractmethod
-    def move(self, board: _Board) -> _Board:
-        ...
+    side: _Side
 
 
 from gbge import board
