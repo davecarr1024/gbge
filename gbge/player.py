@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, TypeVar
 
-_Board = TypeVar("_Board", bound="board.Board")
+
+class Player(ABC):
+    @abstractmethod
+    def move(self, board: "board.Board") -> "board.Board":
+        ...
 
 
 @dataclass(frozen=True)
-class Player(
-    ABC,
-    Generic[_Board,],
-):
-    @abstractmethod
-    def move(self, board: _Board) -> _Board:
-        ...
+class SearchPlayer(Player):
+    search: "board.Board.Search"
+
+    def move(self, board: "board.Board") -> "board.Board":
+        return self.search(board, self).board
 
 
 from gbge import board

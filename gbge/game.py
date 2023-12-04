@@ -1,41 +1,23 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Generic, Optional, Sequence, TypeVar
-
-_Board = TypeVar("_Board", bound="board.Board")
-_Player = TypeVar("_Player", bound="player.Player")
-_Result = TypeVar("_Result")
+from typing import Sequence
 
 
-@dataclass(frozen=True)
-class Game(
-    ABC,
-    Generic[
-        _Board,
-        _Player,
-        _Result,
-    ],
-):
-    players: Sequence[_Player]
-
-    @abstractmethod
-    def initial_board(self) -> _Board:
+class Game(ABC):
+    class Result:
         ...
 
-    def next_player(self, player: _Player) -> _Player:
+    @property
+    @abstractmethod
+    def players(self) -> Sequence["player.Player"]:
+        ...
+
+    def next_player(self, player: "player.Player") -> "player.Player":
         return self.players[(self.players.index(player) + 1) % len(self.players)]
 
-    def run(self, board_: Optional[_Board] = None) -> _Result:
-        board: _Board = board_ if board_ is not None else self.initial_board()
-        result: Optional[_Result] = board.result()
-        player = self.players[0]
-        while result is None:
-            next_board = player.move(board)
-            assert next_board in board.moves(player), "invalid move"
-            board = next_board
-            player = self.next_player(player)
-            result = board.result()
-        return result
+    @property
+    @abstractmethod
+    def initial_board(self) -> "board.Board":
+        ...
 
 
 from gbge import board, player
