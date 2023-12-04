@@ -25,7 +25,8 @@ class Game(
     def next_player(self, player: _Player) -> _Player:
         return self.players[(self.players.index(player) + 1) % len(self.players)]
 
-    def run(self, board: _Board) -> _Result:
+    def run(self, board_: Optional[_Board] = None) -> _Result:
+        board: _Board = board_ if board_ is not None else self.initial_board()
         result: Optional[_Result] = board.result()
         player = self.players[0]
         while result is None:

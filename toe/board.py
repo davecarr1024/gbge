@@ -37,6 +37,9 @@ class Board(
         def at(row, col) -> Optional[player.Player]:
             return self[row, col].player if (row, col) in self else None
 
+        if len(self) == dim.rows * dim.cols:
+            return result.Result(side.Side.x, result.Result.Type.tie)
+
         for player_ in self.game.players:
             for row in range(dim.rows):
                 if all(at(row, col) == player_ for col in range(dim.cols)):

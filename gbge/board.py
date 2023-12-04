@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import FrozenSet, Generic, Optional, Self, TypeVar
 
 _Game = TypeVar("_Game", bound="game.Game")
@@ -16,7 +16,11 @@ class Board(
         _Result,
     ],
 ):
-    game: _Game
+    game: _Game = field(
+        compare=False,
+        repr=False,
+        hash=False,
+    )
 
     @abstractmethod
     def moves(self, player: _Player) -> FrozenSet[Self]:

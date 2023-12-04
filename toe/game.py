@@ -23,5 +23,13 @@ class Game(
     def initial_board(self) -> "board.Board":
         return board.Board(self)
 
+    @property
+    def x(self) -> "player.Player":
+        return self[side.Side.x]
+
+    @property
+    def o(self) -> "player.Player":
+        return self[side.Side.o]
+
 
 from toe import board, player, result, side
