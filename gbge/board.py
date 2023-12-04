@@ -16,6 +16,8 @@ class Board(
         _Result,
     ],
 ):
+    game: _Game
+
     @abstractmethod
     def moves(self, player: _Player) -> FrozenSet[Self]:
         ...

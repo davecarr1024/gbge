@@ -12,6 +12,9 @@ class Piece(
     player: _Player
     pos: pos_lib.Pos
 
+    def __str__(self) -> str:
+        return str(self.player)
+
     def at_pos(self, pos: pos_lib.Pos) -> Self:
         return self.__class__(self.player, pos)
 

@@ -74,21 +74,24 @@ class Board(
                     return pos.Pos(row, col) in self.pieces_by_pos
         raise TypeError(key)
 
+    def _with_pieces(self, pieces: FrozenSet[_Piece]) -> "Self":
+        return self.__class__(self.game, pieces)
+
     def __or__(self, rhs: _Piece | Self) -> Self:
         match rhs:
             case piece.Piece():
-                return self.__class__(self.pieces | {cast(_Piece, rhs)})
+                return self._with_pieces(self.pieces | {cast(_Piece, rhs)})
             case Board():
-                return self.__class__(self.pieces | rhs.pieces)
+                return self._with_pieces(self.pieces | rhs.pieces)
             case _:
                 raise TypeError(rhs)
 
     def __sub__(self, rhs: _Piece | Self) -> Self:
         match rhs:
             case piece.Piece():
-                return self.__class__(self.pieces - {cast(_Piece, rhs)})
+                return self._with_pieces(self.pieces - {cast(_Piece, rhs)})
             case Board():
-                return self.__class__(self.pieces - rhs.pieces)
+                return self._with_pieces(self.pieces - rhs.pieces)
             case _:
                 raise TypeError(rhs)
 

@@ -12,7 +12,8 @@ class _Game(
         "_Result",
     ]
 ):
-    ...
+    def initial_board(self) -> "_Board":
+        return _Board(self)
 
 
 @dataclass(frozen=True)
@@ -22,7 +23,7 @@ class _Board(
         "_Player",
         "_Piece",
         "_Result",
-    ]
+    ],
 ):
     @classmethod
     def dim(cls) -> gbge.grid.Dim:
@@ -58,10 +59,13 @@ class _Result:
     ...
 
 
+_game = _Game([])
+
+
 class BoardTest(TestCase):
     def test_invalid_piece(self) -> None:
         with self.assertRaises(Exception):
-            _Board(frozenset([_Piece(_Player("a"), gbge.grid.Pos(2, 2))]))
+            _Board(_game, frozenset([_Piece(_Player("a"), gbge.grid.Pos(2, 2))]))
 
     def test_contains(self) -> None:
         for lhs, board, expected in list[
@@ -74,49 +78,58 @@ class BoardTest(TestCase):
             [
                 (
                     _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
                     False,
                 ),
                 (
                     gbge.grid.Pos(0, 0),
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
                     False,
                 ),
                 (
                     (0, 0),
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
                     False,
                 ),
                 (
                     _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     True,
                 ),
                 (
                     gbge.grid.Pos(0, 0),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     True,
                 ),
                 (
                     (0, 0),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     True,
                 ),
@@ -139,33 +152,39 @@ class BoardTest(TestCase):
             [
                 (
                     gbge.grid.Pos(0, 0),
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
                     None,
                 ),
                 (
                     (0, 0),
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
                     None,
                 ),
                 (
                     gbge.grid.Pos(0, 0),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                 ),
                 (
                     (0, 0),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                 ),
@@ -188,106 +207,127 @@ class BoardTest(TestCase):
         ](
             [
                 (
-                    _Board(),
-                    _Board(),
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
+                    _Board(
+                        _game,
+                    ),
+                    _Board(
+                        _game,
+                    ),
                 ),
                 (
-                    _Board(),
+                    _Board(
+                        _game,
+                    ),
                     _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
-                    ),
-                ),
-                (
-                    _Board(),
-                    _Board(
-                        frozenset(
-                            [
-                                _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
-                            ]
-                        )
-                    ),
-                    _Board(
-                        frozenset(
-                            [
-                                _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
-                            ]
-                        )
+                        ),
                     ),
                 ),
                 (
                     _Board(
+                        _game,
+                    ),
+                    _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
+                    ),
+                    _Board(
+                        _game,
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
+                            ]
+                        ),
+                    ),
+                ),
+                (
+                    _Board(
+                        _game,
+                        frozenset(
+                            [
+                                _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
+                            ]
+                        ),
                     ),
                     _Piece(_Player("b"), gbge.grid.Pos(0, 0)),
                     None,
                 ),
                 (
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("b"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     None,
                 ),
                 (
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     _Piece(_Player("b"), gbge.grid.Pos(1, 0)),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                                 _Piece(_Player("b"), gbge.grid.Pos(1, 0)),
                             ]
-                        )
+                        ),
                     ),
                 ),
                 (
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                             ]
-                        )
+                        ),
                     ),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("b"), gbge.grid.Pos(1, 0)),
                             ]
-                        )
+                        ),
                     ),
                     _Board(
+                        _game,
                         frozenset(
                             [
                                 _Piece(_Player("a"), gbge.grid.Pos(0, 0)),
                                 _Piece(_Player("b"), gbge.grid.Pos(1, 0)),
                             ]
-                        )
+                        ),
                     ),
                 ),
             ]

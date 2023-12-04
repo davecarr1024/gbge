@@ -14,5 +14,8 @@ class Player(
 ):
     side: _Side
 
+    def __str__(self) -> str:
+        return str(self.side)
+
 
 from gbge import board
